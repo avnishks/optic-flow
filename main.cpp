@@ -40,12 +40,10 @@ int main()
             wait(.00006);
             int dy = read_register(0x04);
             pc.printf("dy = 0x%X \t" ,dy);
-//    pc.printf(" \n");
+            //   pc.printf(" \n");
             pc.printf("(%d)\t",dy);
             //   pc.printf(" \n");
             wait(.0000005);
-
-
 
         }
 
@@ -68,8 +66,8 @@ read_register(int address)
     // take the chip select low to select the device
     spi.format(8,3);
     spi.frequency(1000000);
-// no problem with frequency of 1 MHz
-// chip select should be 0 and then turned 1 , earlier chip select was always grounded to 0 ,
+    // no problem with frequency of 1 MHz
+    // chip select should be 0 and then turned 1 , earlier chip select was always grounded to 0 ,
     // Select the device by seting chip select low
     cs = 0;
 
