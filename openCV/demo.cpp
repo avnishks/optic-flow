@@ -11,6 +11,14 @@
 using namespace cv;
 using namespace std;
 
+static void help()
+{
+	// basic info
+    cout << "\nHot keys: \n"
+            "\tESC - quit the program\n"
+            "\tr - auto-initialize tracking\n"<< endl;
+}
+
 #define MAX_COUNT 500
 char rawWindow[] = "Raw Video";
 char opticalFlowWindow[] = "Optical Flow Window";

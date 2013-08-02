@@ -10,10 +10,7 @@ using namespace std;
 
 static void help()
 {
-    // print a welcome message, and the OpenCV version
-    cout << "\nThis is a demo of Lukas-Kanade optical flow lkdemo(),\n"
-            "Using OpenCV version " << CV_VERSION << endl;
-    cout << "\nIt uses camera by default, but you can provide a path to video as an argument.\n";
+    // basic info
     cout << "\nHot keys: \n"
             "\tESC - quit the program\n"
             "\tr - auto-initialize tracking\n"
