@@ -11,21 +11,13 @@
 using namespace cv;
 using namespace std;
 
-static void help()
-{
-	// basic info
-    cout << "\nHot keys: \n"
-            "\tESC - quit the program\n"
-            "\tr - auto-initialize tracking\n"<< endl;
-}
-
 #define MAX_COUNT 500
 char rawWindow[] = "Raw Video";
 char opticalFlowWindow[] = "Optical Flow Window";
 char imageFileName[32];
 long imageIndex = 0;
 char keyPressed;
-
+int sumx=0,sumy=0,limit=10;
 int main()
 {
 	VideoCapture cap(0);
@@ -65,16 +57,17 @@ int main()
 		}
 		else if (!points2.empty())
 		{
-			cout << "\n\n\nCalculating  calcOpticalFlowPyrLK\n\n\n\n\n";
+//			cout << "\n\n\nCalculating  calcOpticalFlowPyrLK\n\n\n\n\n";
 			calcOpticalFlowPyrLK(prevGrayFrame, grayFrames, points2, points1, status, err, winSize, 3, termcrit, 0, 0.001);
 
 			for (i = k = 0; i < points2.size(); i++)
 			{
-				cout << "Optical Flow Difference... X is "
+				/*cout << "Optical Flow Difference... X is "
 				<< int(points1[i].x - points2[i].x) << "\t Y is "
 				<< int(points1[i].y - points2[i].y) << "\t\t" << i
-				<< "\n";
-
+				<< "\n";*/
+				sumx += points2[i].x - points1[i].x;
+				sumy += points2[i].y - points1[i].y;
 				if ((points1[i].x - points2[i].x) > 0)
 				{
 					line(rgbFrames, points1[i], points2[i], Scalar(0, 0, 255), 1, 1, 0);
@@ -97,6 +90,21 @@ int main()
 			goodFeaturesToTrack(grayFrames, points1, MAX_COUNT, 0.01, 10, Mat(), 3, 0, 0.04);
 
 		}
+
+		if (sumx>limit && sumx< 1000)
+			{cout << "motion in right direction \t";}
+		else if (sumx<-limit && sumx> -1000)
+			{cout << "motion in left direction \t";}
+		else 
+			{cout << "no motion in x direction \t";}
+		if (sumy>limit && sumy< 1000)
+			{cout << "upward motion \n";}
+		else if (sumy<-limit && sumy>-1000)
+			{cout << "downward motion \n";}
+		else 
+			{cout << "No motion in y direction \n";}
+			sumx=0;
+			sumy=0;
 
 		imshow(rawWindow, rgbFrames);
 		imshow(opticalFlowWindow, opticalFlow);
