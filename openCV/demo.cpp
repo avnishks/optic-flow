@@ -2,7 +2,10 @@
 #include <opencv2/video/tracking.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+
 #include <iostream>
+#include <fstream>
+#include <sys/time.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include<stdio.h>
@@ -18,9 +21,17 @@ char imageFileName[32];
 long imageIndex = 0;
 char keyPressed;
 int sumx=0,sumy=0,limit=10;
+
+long now, then;
+double elapsed_seconds, tickspersecond=cvGetTickFrequency() * 1.0e6;
+
 int main()
 {
 	VideoCapture cap(0);
+
+struct timeval tv;
+ofstream myfile;
+myfile.open ("OF_data.txt");
 
 	Mat frame, grayFrames, rgbFrames, prevGrayFrame;
 	Mat opticalFlow = Mat(cap.get(CV_CAP_PROP_FRAME_HEIGHT),
@@ -46,7 +57,16 @@ int main()
 
 	while (1)
 	{
+		then = cvGetTickCount(); 
 		cap >> frame;
+//unsigned long int sec= 
+//double millis = cap.get(CV_CAP_PROP_POS_MSEC);
+gettimeofday(&tv,NULL);
+tv.tv_sec; // seconds
+tv.tv_usec; // microseconds
+unsigned long time_in_micros = 1000000 * tv.tv_sec + tv.tv_usec;
+//output at end
+//cout<<"time stamp is "<<time_in_micros<<" \t";
 		frame.copyTo(rgbFrames);
 		cvtColor(rgbFrames, grayFrames, CV_BGR2GRAY);
 
@@ -90,19 +110,27 @@ int main()
 			goodFeaturesToTrack(grayFrames, points1, MAX_COUNT, 0.01, 10, Mat(), 3, 0, 0.04);
 
 		}
-
+		//1
+		myfile<<"time stamp is "<<time_in_micros<<" \t";
+		//2 & 3
 		if (sumx>limit && sumx< 1000)
-			{cout << "motion in right direction \t";}
+			//{cout << "motion in right direction \t";}
+			{myfile << sumx<<"\t";}
 		else if (sumx<-limit && sumx> -1000)
-			{cout << "motion in left direction \t";}
+			//{cout << "motion in left direction \t";}
+			{myfile << sumx<<"\t";}
 		else 
-			{cout << "no motion in x direction \t";}
+			//{cout << "no motion in x direction \t";}
+			{myfile << 0<<"\t";}
 		if (sumy>limit && sumy< 1000)
-			{cout << "upward motion \n";}
+			//{cout << "upward motion \t";}
+			{myfile << sumy<<"\t";}
 		else if (sumy<-limit && sumy>-1000)
-			{cout << "downward motion \n";}
+			//{cout << "downward motion \t";}
+			{myfile << sumy<<"\t";}
 		else 
-			{cout << "No motion in y direction \n";}
+			//{cout << "No motion in y direction \t";}
+			{myfile << 0<<"\t";}
 			sumx=0;
 			sumy=0;
 
@@ -122,6 +150,12 @@ int main()
 		{
 			opticalFlow = Mat(cap.get(CV_CAP_PROP_FRAME_HEIGHT), cap.get(CV_CAP_PROP_FRAME_HEIGHT), CV_32FC3);
 		}
+	now = cvGetTickCount();
+	elapsed_seconds = (double)(now - then) / tickspersecond;
+	//4
+	myfile<<"time taken is "<<elapsed_seconds<<" \n";
 
 	}
+myfile.close();
+return 0;
 }
